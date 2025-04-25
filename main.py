@@ -64,33 +64,32 @@ if __name__ == "__main__":
                 
                 try:
                     if len(installation_info_list) != 1:
-                        print("WARNING: NO INSTALLATION POSSIBLE")
-                        continue
+                        print(f"WARNING: NO INSTALLATION POSSIBLE for {staff["staffName"]} - {order_detail.get("orderId")}")
 
-                    installation_info = installation_info_list[0]
-                    bundle_item = list(filter(lambda x: x["serviceType"] == 51, order_items))[0]
-                    internet_item = list(filter(lambda x: x["serviceType"] == 79, order_items))[0]
-                    residential_voice_item = list(filter(lambda x: x["serviceType"] == 80, order_items))[0]
+                    installation_info = installation_info_list[0] if len(installation_info_list) > 0 else None
+                    bundle_items = list(filter(lambda x: x["serviceType"] == 51, order_items))
+                    internet_items = list(filter(lambda x: x["serviceType"] == 79, order_items))
+                    residential_voice_items = list(filter(lambda x: x["serviceType"] == 80, order_items))
 
                     datapoint = {
-                        "order_id": str(order_detail["orderId"]),
-                        "staffName": staff["staffName"],
-                        "status": order_detail["stateName"],
-                        "created_date": order_detail["acceptDate"], # created date
-                        "update_date": order_detail["stateDate"], # update date
-                        "installation_contact_name": installation_info["custContactDto"]["contactName"] if "custContactDto" in installation_info and "contactName" in installation_info["custContactDto"] else None,
-                        "installation_contact_email": installation_info["custContactDto"]["email"] if "custContactDto" in installation_info and "email" in installation_info["custContactDto"] else None,
-                        "installation_contact_phone": installation_info["custContactDto"]["contactNbr"] if "custContactDto" in installation_info else None,
-                        "installation_start_time": installation_info["appointmentInfo"]["appointmentStartTime"] if "appointmentStartTime" in installation_info["appointmentInfo"] else None,
-                        "installation_end_time": installation_info["appointmentInfo"]["appointmentEndTime"] if "appointmentEndTime" in installation_info["appointmentInfo"] else None,
-                        "installation_address": installation_info["displayAddress"] if "displayAddress" in installation_info else None,
-                        "customer_name": order_detail["custInfo"]["custName"] if "custInfo" in order_detail and "custName" in order_detail["custInfo"] else None,
-                        "customer_id_type": order_detail["custInfo"]["certTypeName"] if "custInfo" in order_detail and "certTypeName" in order_detail["custInfo"] else None,
-                        "customer_id": order_detail["custInfo"]["certNbr"] if "custInfo" in order_detail and "certNbr" in order_detail["custInfo"] else None,
-                        "bundle_name": bundle_item["mainOfferName"],
-                        "tm_account_id": internet_item["accNbr"],
-                        "account_nbr": internet_item["acctNbr"],
-                        "residential_number": get_residential_voice_number(residential_voice_item)
+                        "order_id": str(order_detail.get("orderId")),
+                        "staffName": staff.get("staffName"),
+                        "status": order_detail.get("stateName"),
+                        "created_date": order_detail.get("acceptDate"), # created date
+                        "update_date": order_detail.get("stateDate"), # update date
+                        "installation_contact_name": installation_info.get("custContactDto", {}).get("contactName") if installation_info else None,
+                        "installation_contact_email": installation_info.get("custContactDto", {}).get("email") if installation_info else None,
+                        "installation_contact_phone": installation_info.get("custContactDto", {}).get("contactNbr") if installation_info else None,
+                        "installation_start_time": installation_info.get("appointmentInfo", {}).get("appointmentStartTime") if installation_info else None,
+                        "installation_end_time": installation_info.get("appointmentInfo", {}).get("appointmentEndTime") if installation_info else None,
+                        "installation_address": installation_info.get("displayAddress") if installation_info else None,
+                        "customer_name": order_detail.get("custInfo", {}).get("custName"),
+                        "customer_id_type": order_detail.get("custInfo", {}).get("certTypeName"),
+                        "customer_id": order_detail.get("custInfo", {}).get("certNbr"),
+                        "bundle_name": bundle_items[0].get("mainOfferName") if len(bundle_items) > 0 else None,
+                        "tm_account_id": internet_items[0].get("accNbr") if len(internet_items) > 0 else None,
+                        "account_nbr": internet_items[0].get("acctNbr") if len(internet_items) > 0 else None,
+                        "residential_number": get_residential_voice_number(residential_voice_items[0]) if len(residential_voice_items) > 0 else None
                     }
                     data.append(datapoint)
                 except Exception as e:
