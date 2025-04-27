@@ -1,4 +1,6 @@
 import pandas as pd
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from tm.api import get_all_order_list, get_all_staff, get_order_detail, get_order_list
 
 
@@ -15,9 +17,10 @@ def get_residential_voice_number(residential_voice_item):
 
 if __name__ == "__main__":
     print("-------------RESULT----------------")
+    print((datetime.today() - relativedelta(months=2)).strftime("%Y%m") + "01000000")
     data = []
     staffs = get_all_staff()
-    # staffs = filter(lambda x: x["staffId"] in [621433, 621414, 621576], staffs)
+    # staffs = filter(lambda x: x["staffId"] in [621394], staffs)
     for idx, staff in enumerate(staffs):
         # get_staff_detail_response = get_staff_detail(
         #     {"staffId": staff["staffId"], "staffCode": staff["staffCode"]}
@@ -25,8 +28,14 @@ if __name__ == "__main__":
         # staff_detail = get_staff_detail_response.json()["data"]
 
         # get_order_list_response = get_order_list(get_order_list_data)
-        
-        all_order = get_all_order_list(staff["staffId"], "Y")
+        # get_order_list_result = get_order_list_response.json()
+        createdDateFrom = (datetime.today() - relativedelta(months=2)).strftime(
+            "%Y%m"
+        ) + "01000000"
+        createdDateTo = datetime.today().strftime("%Y%m%d%H%M%S")
+        all_order = get_all_order_list(
+            staff["staffId"], "N", createdDateFrom, createdDateTo
+        )
 
         print(idx, staff["staffId"], staff["staffName"], len(all_order))
 
