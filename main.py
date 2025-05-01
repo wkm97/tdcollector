@@ -1,19 +1,18 @@
+from datetime import datetime
+import calendar
 import pandas as pd
-from tm.api import get_all_order_list, get_all_staff, get_order_detail, get_order_list
+import typer
+from tm.api import get_all_order_list, get_all_staff, get_order_detail
 
-
-def main():
-    for i in range(5):
-        print("------------------")
-
+app = typer.Typer()
 
 def get_residential_voice_number(residential_voice_item):
     if "prefix" in residential_voice_item and "accNbr" in residential_voice_item:
         return residential_voice_item["prefix"] + residential_voice_item["accNbr"]
     return None
 
-
-if __name__ == "__main__":
+@app.command()
+def ongoing():
     print("-------------RESULT----------------")
     data = []
     staffs = get_all_staff()
@@ -139,3 +138,70 @@ if __name__ == "__main__":
     df = df.set_index("order_id")
     df.to_excel("ongoing.xlsx")
     print(df)
+
+@app.command()
+def historical(year: int, month: int):
+    print("-------------RESULT----------------")
+    if(year < 2025 or year > 2100):
+        raise Exception("Year must be in between 2025 and 2100")
+    if(month < 1 or month > 12):
+        raise Exception("Month must be in between 1 and 12")
+    target = datetime(year, month, 1)
+    month_range = calendar.monthrange(year, month)
+    createdDateFrom = target.strftime(
+            "%Y%m"
+        ) + "01000000"
+        # createdDateTo = datetime.today().strftime("%Y%m%d%H%M%S")
+    createdDateTo = target.strftime(
+            "%Y%m"
+        ) + str(month_range[1]) + "235959"
+    print(createdDateFrom, createdDateTo)
+    data = []
+    staffs = get_all_staff()
+    # staffs = filter(lambda x: x["staffId"] in [621394], staffs)
+    for idx, staff in enumerate(staffs):
+        # get_staff_detail_response = get_staff_detail(
+        #     {"staffId": staff["staffId"], "staffCode": staff["staffCode"]}
+        # )
+        # staff_detail = get_staff_detail_response.json()["data"]
+
+        # get_order_list_response = get_order_list(get_order_list_data)
+        # get_order_list_result = get_order_list_response.json()
+        all_order = get_all_order_list(
+            staff["staffId"], "N", createdDateFrom, createdDateTo
+        )
+
+        print(idx, staff["staffId"], staff["staffName"], len(all_order))
+
+        for order in all_order:
+            order_id = order["orderId"]
+            # order_nbr = order["orderNbr"]
+            # get_order_detail_data = {
+            #     "custOrderId": order["orderId"],
+            #     "custOrderNbr": order["orderNbr"],
+            # }
+            # order_detail = get_order_detail_response.json()["data"]
+            # order_items = order.get("orderItemList")
+            # installation_info_list = order_detail["installationInfoList"]
+
+            try:
+                datapoint = {
+                    "order_id": str(order_id),
+                    "staffName": staff.get("staffName"),
+                    "status": order.get("stateName"),
+                    "created_date": order.get("acceptDate"),  # created date
+                    "update_date": order.get("stateDate"),  # update date
+                }
+                data.append(datapoint)
+            except Exception as e:
+                print(staff)
+                print(order_id)
+                raise e
+
+    df = pd.DataFrame(data)
+    df = df.set_index("order_id")
+    df.to_excel("historical.xlsx")
+    print(df)
+
+if __name__ == "__main__":
+    app()

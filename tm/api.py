@@ -7,8 +7,7 @@ from hashlib import sha256
 from urllib.parse import urlencode
 import re
 
-COOKIE = "visid_incap_3057414=O7vL8YLNT2e/BUAerwjS9jSP+mcAAAAAQUIPAAAAAAAY6GcEAynMNKgBJbAwlbNx; visid_incap_2993746=DKwY0xq7SKG70Hbq+JYPnAWe+mcAAAAAQUIPAAAAAAA3/+h0pd5NJYtzz5QWI9Ov; INIT_PORTAL=7023; wk8XJKsjpt60BnltX9hNtw===nlCRYGb1gUGYjK0gliqA2A%3D%3D%20utVddUw0Kwe6SEJi3KkuCg%3D%3D; staffJobId=621576; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%22600381%22%2C%22first_id%22%3A%221962abf69b0155e-0dcd8098d3d2c5-7e433c49-3686400-1962abf69b12517%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTk2MmFiZjY5YjAxNTVlLTBkY2Q4MDk4ZDNkMmM1LTdlNDMzYzQ5LTM2ODY0MDAtMTk2MmFiZjY5YjEyNTE3IiwiJGlkZW50aXR5X2xvZ2luX2lkIjoiNjAwMzgxIn0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%24identity_login_id%22%2C%22value%22%3A%22600381%22%7D%2C%22%24device_id%22%3A%221962f61ba232e8-0f7a6a9d2e908a-7e433c49-3686400-1962f61ba2422b6%22%7D; incap_ses_1671_3057414=OqyaHzEbvl/Sjay/7ZUwFxJSC2gAAAAAGHskEJDZmnbpXsVgObmxxw==; HTML_VERSION=1745572165582; ZSMART_LOCALE=en; areaId=280; orgId=600381; userId=621576; SESSION=cd70cfe1-3f1d-41c4-a465-5981d2afdbd6"
-
+COOKIE = "visid_incap_3057414=O7vL8YLNT2e/BUAerwjS9jSP+mcAAAAAQUIPAAAAAAAY6GcEAynMNKgBJbAwlbNx; visid_incap_2993746=DKwY0xq7SKG70Hbq+JYPnAWe+mcAAAAAQUIPAAAAAAA3/+h0pd5NJYtzz5QWI9Ov; INIT_PORTAL=7023; wk8XJKsjpt60BnltX9hNtw===nlCRYGb1gUGYjK0gliqA2A%3D%3D%20utVddUw0Kwe6SEJi3KkuCg%3D%3D; staffJobId=621576; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%22600381%22%2C%22first_id%22%3A%221962abf69b0155e-0dcd8098d3d2c5-7e433c49-3686400-1962abf69b12517%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTk2MmFiZjY5YjAxNTVlLTBkY2Q4MDk4ZDNkMmM1LTdlNDMzYzQ5LTM2ODY0MDAtMTk2MmFiZjY5YjEyNTE3IiwiJGlkZW50aXR5X2xvZ2luX2lkIjoiNjAwMzgxIn0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%24identity_login_id%22%2C%22value%22%3A%22600381%22%7D%2C%22%24device_id%22%3A%221962f61ba232e8-0f7a6a9d2e908a-7e433c49-3686400-1962f61ba2422b6%22%7D; areaId=280; orgId=600381; userId=621576; ZSMART_LOCALE=en; incap_ses_1136_3057414=HX0+LndJQEku7yNlQ+LDDx1CEmgAAAAAqkZ2jH7MGMyOWzA9WIww3Q==; incap_ses_1671_3057414=Gfg2B2071iQbmSAO8JUwF/ICE2gAAAAAU0VKyT2O6fiCTyHcKzmBMw==; SESSION=970a6baf-7f51-46a8-a100-ebf6337b6d5e; HTML_VERSION=1746069767527"
 
 def rate_limit(calls_per_second):
     """
@@ -86,7 +85,7 @@ def get_all_order_list(staffId, onWayFlag, createdDateFrom = None, createdDateTo
         if onWayFlag == "Y":
             data = {
                 "dPartyCode": staffId,
-                "pageSize": 10,
+                "pageSize": 50,
                 "onWayFlag": onWayFlag,  # Y/N
                 "pageNum": page_number,
                 "dPartyType": "E",
@@ -95,7 +94,7 @@ def get_all_order_list(staffId, onWayFlag, createdDateFrom = None, createdDateTo
         else:
             data = {
                 "dPartyCode": staffId,
-                "pageSize": 10,
+                "pageSize": 50,
                 "onWayFlag": onWayFlag,  # Y/N
                 "pageNum": page_number,
                 "dPartyType": "E",
