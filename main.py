@@ -67,7 +67,7 @@ def ongoing():
                     "staffName": staff.get("staffName"),
                     "status": order_detail.get("stateName"),
                     "created_date": order_detail.get("acceptDate"),  # created date
-                    "update_date": order_detail.get("stateDate"),  # update date
+                    "updated_date": order_detail.get("stateDate"),  # update date
                     "installation_contact_name": (
                         installation_info.get("custContactDto", {}).get("contactName")
                         if installation_info
@@ -210,7 +210,7 @@ def historical(year: int, month: int):
                     "staffName": staff.get("staffName"),
                     "status": order_detail.get("stateName"),
                     "created_date": order_detail.get("acceptDate"),  # created date
-                    "update_date": order_detail.get("stateDate"),  # update date
+                    "updated_date": order_detail.get("stateDate"),  # update date
                     "installation_contact_name": (
                         installation_info.get("custContactDto", {}).get("contactName")
                         if installation_info
