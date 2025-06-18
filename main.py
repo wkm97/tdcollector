@@ -127,6 +127,7 @@ def ongoing():
                         if len(residential_voice_items) > 0
                         else None
                     ),
+                    "event_type_name": order_detail.get('eventTypeName'),
                 }
                 data.append(datapoint)
             except Exception as e:
@@ -270,6 +271,7 @@ def historical(year: int, month: int):
                         if len(residential_voice_items) > 0
                         else None
                     ),
+                    "event_type_name": order_detail.get('eventTypeName'),
                 }
                 data.append(datapoint)
             except Exception as e:
