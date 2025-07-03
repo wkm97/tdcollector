@@ -42,6 +42,7 @@ def process_order(staff, order):
         cloud_storage_item = list(
             filter(lambda x: x["serviceType"] == 888, order_items)
         )
+        uni5g_items = list(filter(lambda x: x["serviceType"] == 15, order_items))
 
         datapoint = {
             "order_id": str(order_detail.get("orderId")),
@@ -105,6 +106,7 @@ def process_order(staff, order):
                 if len(cloud_storage_item) > 0
                 else None
             ),
+            "uni5g_items": uni5g_items[0].get("mainOfferName") if len(uni5g_items) > 0 else None
         }
         return datapoint
     except Exception as e:
