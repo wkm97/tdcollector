@@ -33,16 +33,13 @@ def process_order(staff, order):
         installation_info = (
             installation_info_list[0] if len(installation_info_list) > 0 else None
         )
-        bundle_items = list(filter(lambda x: x["serviceType"] == 51, order_items))
-        internet_items = list(filter(lambda x: x["serviceType"] == 79, order_items))
-        residential_voice_items = list(
-            filter(lambda x: x["serviceType"] == 80, order_items)
-        )
-        dms_items = list(filter(lambda x: x["serviceType"] == 924, order_items))
-        cloud_storage_item = list(
-            filter(lambda x: x["serviceType"] == 888, order_items)
-        )
-        uni5g_items = list(filter(lambda x: x["serviceType"] == 15, order_items))
+        # bundle_items = next((x for x in order_items if x["serviceType"] == 51), None)
+        bundle_items = next((x for x in order_items if x["serviceType"] == 51), None)
+        internet_items = next((x for x in order_items if x["serviceType"] == 79), None)
+        residential_voice_items = next((x for x in order_items if x["serviceType"] == 80), None)
+        dms_items = next((x for x in order_items if x["serviceType"] == 924), None)
+        cloud_storage_item = next((x for x in order_items if x["serviceType"] == 888), None)
+        uni5g_items = next((x for x in order_items if x["serviceType"] == 15), None)
 
         datapoint = {
             "order_id": str(order_detail.get("orderId")),
@@ -82,31 +79,32 @@ def process_order(staff, order):
             "customer_id_type": order_detail.get("custInfo", {}).get("certTypeName"),
             "customer_id": order_detail.get("custInfo", {}).get("certNbr"),
             "bundle_name": (
-                bundle_items[0].get("mainOfferName") if len(bundle_items) > 0 else None
+                bundle_items.get("mainOfferName") if bundle_items else None
             ),
             "tm_account_id": (
-                internet_items[0].get("accNbr") if len(internet_items) > 0 else None
+                internet_items.get("accNbr") if internet_items else None
             ),
             "account_nbr": (
-                internet_items[0].get("acctNbr") if len(internet_items) > 0 else None
+                internet_items.get("acctNbr") if internet_items else None
             ),
             "residential_number": (
-                get_residential_voice_number(residential_voice_items[0])
-                if len(residential_voice_items) > 0
+                get_residential_voice_number(residential_voice_items)
+                if residential_voice_items
                 else None
             ),
             "event_type_name": order_detail.get("eventTypeName"),
             "dms_item": (
-                dms_items[0].get("feeList")[0].get("priceName")
-                if len(dms_items) > 0
+                dms_items.get("feeList")[0].get("priceName")
+                if dms_items
                 else None
             ),
             "cloud_storage_item": (
-                cloud_storage_item[0].get("feeList")[0].get("priceName")
-                if len(cloud_storage_item) > 0
+                next((x for x in cloud_storage_item.get("offerInstList") if x["offerType"] == "4"), {}).get("offerName")
+                # cloud_storage_item.get("offerInstList")[0].get("offerName")
+                if cloud_storage_item and cloud_storage_item.get("offerInstList")
                 else None
             ),
-            "uni5g_items": uni5g_items[0].get("mainOfferName") if len(uni5g_items) > 0 else None
+            "uni5g_items": uni5g_items.get("mainOfferName") if uni5g_items else None
         }
         return datapoint
     except Exception as e:
@@ -122,13 +120,6 @@ def ongoing():
     staffs = get_all_staff()
     # staffs = filter(lambda x: x["staffId"] in [621433, 621414, 621576], staffs)
     for idx, staff in enumerate(staffs):
-        # get_staff_detail_response = get_staff_detail(
-        #     {"staffId": staff["staffId"], "staffCode": staff["staffCode"]}
-        # )
-        # staff_detail = get_staff_detail_response.json()["data"]
-
-        # get_order_list_response = get_order_list(get_order_list_data)
-
         all_order = get_all_order_list(staff["staffId"], "Y")
 
         print(idx, staff["staffId"], staff["staffName"], len(all_order))
@@ -159,13 +150,9 @@ def historical(year: int, month: int):
     staffs = get_all_staff()
     # staffs = filter(lambda x: x["staffId"] in [621394], staffs)
     for idx, staff in enumerate(staffs):
-        # get_staff_detail_response = get_staff_detail(
-        #     {"staffId": staff["staffId"], "staffCode": staff["staffCode"]}
-        # )
-        # staff_detail = get_staff_detail_response.json()["data"]
-
-        # get_order_list_response = get_order_list(get_order_list_data)
-        # get_order_list_result = get_order_list_response.json()
+        # if staff["staffId"] != 634795:
+        #     continue
+        
         all_order = get_all_order_list(
             staff["staffId"], "N", createdDateFrom, createdDateTo
         )
